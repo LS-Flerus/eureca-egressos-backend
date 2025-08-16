@@ -9,7 +9,7 @@ import java.util.List;
 
 @Setter
 @Getter
-public class StudentModel {
+public class ScaoStudentModel {
 
     @JsonProperty(EurecaJsonProperties.MATRICULA_ALUNO)
     private String matriculaDoEstudante;

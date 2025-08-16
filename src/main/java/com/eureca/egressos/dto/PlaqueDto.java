@@ -11,8 +11,9 @@ import java.util.UUID;
 public class PlaqueDto {
     private UUID id;
     private String courseCode;
-    private String periodo;
+    private String semester;
     private String className;
-    private Boolean aprovada;
-    private Boolean paraAprovacao;
+    private int campus;
+    private Boolean approved;
+    private Boolean toApprove;
 }

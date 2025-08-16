@@ -4,7 +4,9 @@ import com.eureca.egressos.dto.PlaqueDto;
 import com.eureca.egressos.dto.UserDto;
 import com.eureca.egressos.model.PlaqueModel;
 import com.eureca.egressos.model.UserModel;
+import com.eureca.egressos.model.StudentModel;
 import com.eureca.egressos.repository.PlaqueRepository;
+import com.eureca.egressos.repository.StudentRepository;
 import com.eureca.egressos.service.interfaces.PlaqueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,10 +20,12 @@ import java.util.stream.Collectors;
 public class PlaqueServiceImpl implements PlaqueService {
 
     private final PlaqueRepository plaqueRepository;
+    private final StudentRepository studentRepository;
 
     @Autowired
-    public PlaqueServiceImpl(PlaqueRepository plaqueRepository) {
+    public PlaqueServiceImpl(PlaqueRepository plaqueRepository, StudentRepository studentRepository) {
         this.plaqueRepository = plaqueRepository;
+        this.studentRepository = studentRepository;
     }
 
     @Override
@@ -39,10 +43,10 @@ public class PlaqueServiceImpl implements PlaqueService {
                 .orElseThrow(() -> new RuntimeException("Plaque not found"));
 
         existing.setCourseCode(plaqueDto.getCourseCode());
-        existing.setPeriodo(plaqueDto.getPeriodo());
+        existing.setSemester(plaqueDto.getSemester());
         existing.setClassName(plaqueDto.getClassName());
-        existing.setAprovada(plaqueDto.getAprovada());
-        existing.setParaAprovacao(plaqueDto.getParaAprovacao());
+        existing.setApproved(plaqueDto.getApproved());
+        existing.setToApprove(plaqueDto.getToApprove());
 
         return plaqueRepository.save(existing).toDto();
     }
@@ -68,7 +72,74 @@ public class PlaqueServiceImpl implements PlaqueService {
     }
 
     @Override
-    public Collection<PlaqueDto> listPlaqueByFilter(String startSemester, String endSemester, String courseCode, String className, boolean approved, boolean toAprove, int campus, String studentName) {
-        return null;
+    public Collection<PlaqueDto> listPlaqueByFilter(
+            String startSemester,
+            String endSemester,
+            String courseCode,
+            String className,
+            boolean approved,
+            boolean toApprove,
+            int campus,
+            String studentName
+    ) {
+        List<PlaqueModel> allPlaques = plaqueRepository.findAll();
+
+        final Double comparativeStartSemester = startSemester != null ? Double.parseDouble(startSemester) : 9999.9;
+
+        final Double comparativeEndSemester = endSemester != null ? Double.parseDouble(endSemester) : 0.0;
+
+        final Set<UUID> plaqueIdsFromStudents =
+                (studentName != null && !studentName.isBlank())
+                        ? studentRepository.findByNameContainingIgnoreCase(studentName)
+                        .stream()
+                        .map(student -> student.getPlaque().getId()) // ou getPlaqueId()
+                        .collect(Collectors.toSet())
+                        : Collections.emptySet();
+
+
+        return allPlaques.stream()
+                .filter(plaque -> {
+                    // Filtro por startSemester
+                    if (comparativeStartSemester > Double.parseDouble(plaque.getSemester()) ||
+                            comparativeEndSemester < Double.parseDouble(plaque.getSemester())) {
+                        return false;
+                    }
+
+                    // Filtro por courseCode
+                    if (courseCode != null && !courseCode.isEmpty() &&
+                            !courseCode.equals(plaque.getCourseCode())) {
+                        return false;
+                    }
+
+                    // Filtro por className
+                    if (className != null && !className.isEmpty() &&
+                            !plaque.getClassName().contains(className)) {
+                        return false;
+                    }
+
+                    // Filtro por approved
+                    if (approved == plaque.getApproved()) {
+                        return false;
+                    }
+
+                    // Filtro por toApprove
+                    if (toApprove == plaque.getToApprove()) {
+                        return false;
+                    }
+
+                    // Filtro por campus
+                    if (campus > 0 && plaque.getCampus() != campus) {
+                        return false;
+                    }
+
+                    // Filtro por studentName (se fornecido)
+                    if (!plaqueIdsFromStudents.isEmpty() && !plaqueIdsFromStudents.contains(plaque.getId())) {
+                        return false;
+                    }
+
+                    return true;
+                })
+                .map(PlaqueModel::toDto)
+                .toList();
     }
 }

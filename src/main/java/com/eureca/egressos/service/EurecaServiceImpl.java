@@ -1,7 +1,7 @@
 package com.eureca.egressos.service;
 
 import com.eureca.egressos.dto.dasScao.ScaoStudentDto;
-import com.eureca.egressos.model.dasScao.StudentModel;
+import com.eureca.egressos.model.dasScao.ScaoStudentModel;
 import com.eureca.egressos.service.interfaces.EurecaService;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -36,14 +36,14 @@ public class EurecaServiceImpl implements EurecaService {
 
             HttpEntity<?> entity = new HttpEntity<>(headers);
 
-            ResponseEntity<List<StudentModel>> response = restTemplate.exchange(
+            ResponseEntity<List<ScaoStudentModel>> response = restTemplate.exchange(
                     url,
                     HttpMethod.GET,
                     entity,
                     new ParameterizedTypeReference<>() {}
             );
 
-            List<StudentModel> students = response.getBody();
+            List<ScaoStudentModel> students = response.getBody();
             if (students == null) {
                 return List.of();
             }

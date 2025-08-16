@@ -23,21 +23,22 @@ public class PlaqueSessionModel {
     @JoinColumn(name = "id_placa")
     private PlaqueModel plaque;
 
-    @Column(nullable = false, length = 20)
-    private String nome;
+    @Column(name = "nome", nullable = false, length = 20)
+    private String name;
 
-    @Column(nullable = false, length = 255)
-    private String conteudo;
+    @Column(name = "conteudo", nullable = false, length = 255)
+    private String content;
 
-    private Boolean lista;
+    @Column(name = "lista", nullable = false)
+    private Boolean isList;
 
     public PlaqueSessionDto toDto() {
         PlaqueSessionDto dto = new PlaqueSessionDto();
         dto.setId(this.id);
         dto.setPlaqueId(this.plaque != null ? this.plaque.getId() : null);
-        dto.setNome(this.nome);
-        dto.setConteudo(this.conteudo);
-        dto.setLista(this.lista);
+        dto.setName(this.name);
+        dto.setContent(this.content);
+        dto.setIsList(this.isList);
         return dto;
     }
 
@@ -50,9 +51,9 @@ public class PlaqueSessionModel {
         return PlaqueSessionModel.builder()
                 .id(dto.getId())
                 .plaque(plaque)
-                .nome(dto.getNome())
-                .conteudo(dto.getConteudo())
-                .lista(dto.getLista())
+                .name(dto.getName())
+                .content(dto.getContent())
+                .isList(dto.getIsList())
                 .build();
     }
 }

@@ -18,29 +18,29 @@ public class StudentModel {
     @GeneratedValue
     private UUID id;
 
-    @Column(nullable = false, length = 100)
-    private String nome;
+    @Column(name = "nome", nullable = false, length = 100)
+    private String name;
 
     @Column(name = "codigo_curso", nullable = false, length = 20)
     private String courseCode;
 
-    @Column(nullable = false, length = 20)
-    private String periodo;
+    @Column(name = "periodo", nullable = false, length = 20)
+    private String semester;
 
     @ManyToOne
     @JoinColumn(name = "id_placa")
     private PlaqueModel plaque;
 
-    @Column(name = "url_foto", length = 50)
-    private String photoUrl;
+    @Column(name = "id_foto", length = 50)
+    private String photoId;
 
     public StudentDto toDto() {
         StudentDto dto = new StudentDto();
         dto.setId(id);
-        dto.setNome(nome);
+        dto.setName(name);
         dto.setCourseCode(courseCode);
-        dto.setPeriodo(periodo);
-        dto.setPhotoUrl(photoUrl);
+        dto.setSemester(semester);
+        dto.setPhotoId(photoId);
         if (plaque != null) {
             dto.setPlaqueId(plaque.getId());
         }
@@ -55,11 +55,11 @@ public class StudentModel {
 
         return StudentModel.builder()
                 .id(dto.getId())
-                .nome(dto.getNome())
+                .name(dto.getName())
                 .courseCode(dto.getCourseCode())
-                .periodo(dto.getPeriodo())
+                .semester(dto.getSemester())
                 .plaque(plaque)
-                .photoUrl(dto.getPhotoUrl())
+                .photoId(dto.getPhotoId())
                 .build();
     }
 }

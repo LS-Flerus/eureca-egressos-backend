@@ -10,7 +10,7 @@ import java.util.UUID;
 public class PlaqueSessionDto {
     private UUID id;
     private UUID plaqueId;
-    private String nome;
-    private String conteudo;
-    private Boolean lista;
+    private String name;
+    private String content;
+    private Boolean isList;
 }

@@ -21,23 +21,29 @@ public class PlaqueModel {
     private String courseCode;
 
     @Column(nullable = false, length = 20)
-    private String periodo;
+    private String semester;
 
     @Column(name = "nome_turma", length = 30)
     private String className;
 
-    private Boolean aprovada;
+    @Column(name = "campus", length = 30)
+    private int campus;
 
-    private Boolean paraAprovacao;
+    @Column(name = "aprovada")
+    private Boolean approved;
+
+    @Column(name = "para_aprovacao")
+    private Boolean toApprove;
 
     public PlaqueDto toDto() {
         PlaqueDto dto = new PlaqueDto();
         dto.setId(id);
         dto.setCourseCode(courseCode);
-        dto.setPeriodo(periodo);
+        dto.setSemester(semester);
         dto.setClassName(className);
-        dto.setAprovada(aprovada);
-        dto.setParaAprovacao(paraAprovacao);
+        dto.setCampus(campus);
+        dto.setApproved(approved);
+        dto.setToApprove(toApprove);
 
         return dto;
     }
@@ -46,10 +52,11 @@ public class PlaqueModel {
         return PlaqueModel.builder()
                 .id(dto.getId())
                 .courseCode(dto.getCourseCode())
-                .periodo(dto.getPeriodo())
+                .semester(dto.getSemester())
                 .className(dto.getClassName())
-                .aprovada(dto.getAprovada())
-                .paraAprovacao(dto.getParaAprovacao())
+                .campus(dto.getCampus())
+                .approved(dto.getApproved())
+                .toApprove(dto.getToApprove())
                 .build();
     }
 }

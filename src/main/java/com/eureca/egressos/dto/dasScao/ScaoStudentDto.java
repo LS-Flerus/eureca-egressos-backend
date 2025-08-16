@@ -1,6 +1,6 @@
 package com.eureca.egressos.dto.dasScao;
 
-import com.eureca.egressos.model.dasScao.StudentModel;
+import com.eureca.egressos.model.dasScao.ScaoStudentModel;
 import com.eureca.egressos.util.EurecaJsonProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -169,7 +169,7 @@ public class ScaoStudentDto {
     @JsonProperty(EurecaJsonProperties.UFPB)
     private Integer ufpb;
 
-    public static ScaoStudentDto fromModel(StudentModel model) {
+    public static ScaoStudentDto fromModel(ScaoStudentModel model) {
         if (model == null) {
             return null;
         }
