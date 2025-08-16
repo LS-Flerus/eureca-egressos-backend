@@ -1,15 +1,11 @@
 package com.eureca.egressos.service;
 
 import com.eureca.egressos.dto.PlaqueDto;
-import com.eureca.egressos.dto.UserDto;
 import com.eureca.egressos.model.PlaqueModel;
-import com.eureca.egressos.model.UserModel;
-import com.eureca.egressos.model.StudentModel;
 import com.eureca.egressos.repository.PlaqueRepository;
 import com.eureca.egressos.repository.StudentRepository;
 import com.eureca.egressos.service.interfaces.PlaqueService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -99,40 +95,33 @@ public class PlaqueServiceImpl implements PlaqueService {
 
         return allPlaques.stream()
                 .filter(plaque -> {
-                    // Filtro por startSemester
                     if (comparativeStartSemester > Double.parseDouble(plaque.getSemester()) ||
                             comparativeEndSemester < Double.parseDouble(plaque.getSemester())) {
                         return false;
                     }
 
-                    // Filtro por courseCode
                     if (courseCode != null && !courseCode.isEmpty() &&
                             !courseCode.equals(plaque.getCourseCode())) {
                         return false;
                     }
 
-                    // Filtro por className
                     if (className != null && !className.isEmpty() &&
                             !plaque.getClassName().contains(className)) {
                         return false;
                     }
 
-                    // Filtro por approved
                     if (approved == plaque.getApproved()) {
                         return false;
                     }
 
-                    // Filtro por toApprove
                     if (toApprove == plaque.getToApprove()) {
                         return false;
                     }
 
-                    // Filtro por campus
                     if (campus > 0 && plaque.getCampus() != campus) {
                         return false;
                     }
 
-                    // Filtro por studentName (se fornecido)
                     if (!plaqueIdsFromStudents.isEmpty() && !plaqueIdsFromStudents.contains(plaque.getId())) {
                         return false;
                     }
