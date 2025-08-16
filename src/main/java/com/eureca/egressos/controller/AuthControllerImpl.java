@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class AuthControllerImpl implements AuthController {
     private final AuthService authService;
-
     @Autowired
     public AuthControllerImpl(AuthService authService) {
         this.authService = authService;

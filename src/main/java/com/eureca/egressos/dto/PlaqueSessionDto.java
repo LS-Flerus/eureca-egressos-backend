@@ -7,11 +7,10 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class UserDto {
+public class PlaqueSessionDto {
     private UUID id;
-    private String login;
-    private String password;
-    private String name;
-    private String courseCode;
     private UUID plaqueId;
+    private String nome;
+    private String conteudo;
+    private Boolean lista;
 }

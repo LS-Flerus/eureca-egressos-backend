@@ -26,6 +26,9 @@ public class User {
     @Column(name = "courseCode")
     private String courseCode;
 
-    @Column(name = "type")
-    private String type;
+    @Column(name = "password")
+    private String password;
+
+    @Column(name = "idPlaque")
+    private int idPlaque;
 }
