@@ -1,8 +1,6 @@
 package com.eureca.egressos.service.interfaces;
 
 import com.eureca.egressos.dto.UserDto;
-import com.eureca.egressos.dto.user.UserCreateRequestDto;
-import com.eureca.egressos.dto.user.UserResponseDto;
 
 import java.util.List;
 import java.util.UUID;

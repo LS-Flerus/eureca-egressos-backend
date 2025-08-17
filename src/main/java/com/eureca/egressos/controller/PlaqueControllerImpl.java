@@ -1,70 +1,80 @@
 package com.eureca.egressos.controller;
 
-import com.eureca.egressos.dto.plaque.PlaqueCreateRequestDto;
-import com.eureca.egressos.dto.plaque.PlaqueResponseDto;
-import com.eureca.egressos.dto.user.UserCreateRequestDto;
-import com.eureca.egressos.dto.user.UserResponseDto;
+import com.eureca.egressos.controller.documentation.PlaqueController;
+import com.eureca.egressos.dto.PlaqueDto;
 import com.eureca.egressos.service.interfaces.PlaqueService;
-import com.eureca.egressos.service.interfaces.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/plaque")
 @CrossOrigin
 @Validated
-public class PlaqueControllerImpl {
+public class PlaqueControllerImpl implements PlaqueController {
     private final PlaqueService plaqueService;
-    @Autowired
+
     public PlaqueControllerImpl(PlaqueService plaqueService) {
         this.plaqueService = plaqueService;
     }
 
+    @Override
     @PostMapping("/create")
-    public ResponseEntity<String> createPlaque(@Validated @RequestBody PlaqueCreateRequestDto plaqueDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(plaqueService.createPlaque(plaqueDto));
+    public ResponseEntity<PlaqueDto> createPlaque(@RequestBody PlaqueDto plaqueDto) {
+        return ResponseEntity.ok(plaqueService.createPlaque(plaqueDto));
     }
 
+    @Override
+    @PutMapping("/update")
+    public ResponseEntity<PlaqueDto> updatePlaque(@RequestParam UUID id, @RequestBody PlaqueDto plaqueDto) {
+        return ResponseEntity.ok(plaqueService.updatePlaque(id, plaqueDto));
+    }
+
+    @Override
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deletePlaque(
-            @RequestParam("id") int id) {
-        return ResponseEntity.status(HttpStatus.OK).body(plaqueService.deletePlaque(id));
+    public ResponseEntity<Void> deletePlaque(@RequestParam UUID id) {
+        plaqueService.deletePlaque(id);
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/get")
-    public ResponseEntity<PlaqueResponseDto> getPlaque(
-            @RequestParam("id") int id) {
-        return ResponseEntity.status(HttpStatus.OK).body(plaqueService.getPlaqueById(id));
+    @Override
+    @GetMapping("/getById")
+    public ResponseEntity<PlaqueDto> getPlaqueById(@RequestParam UUID id) {
+        return ResponseEntity.ok(plaqueService.getPlaqueById(id));
     }
 
-    @GetMapping("/getWithParameters")
+    @Override
+    @GetMapping("/getAll")
+    public ResponseEntity<List<PlaqueDto>> getAllPlaques() {
+        return ResponseEntity.ok(plaqueService.getAllPlaques());
+    }
+
+    @GetMapping("/getByFilter")
     public ResponseEntity<Collection<?>> getAllWithMetricsByFilters(
-            @RequestParam(value = "periodo_de", required = false) String startSemester,
-            @RequestParam(value = "periodo_ate", required = false) String endSemester,
-            @RequestParam(value = "codigo_curso", required = false) String courseCode,
-            @RequestParam(value = "nome_turma", required = false) String className,
-            @RequestParam(value = "aprovada", required = false) boolean approved,
-            @RequestParam(value = "para_aprovacao", required = false) boolean toApproved,
+            @RequestParam(value = "startSemester", required = false) String startSemester,
+            @RequestParam(value = "endSemester", required = false) String endSemester,
+            @RequestParam(value = "courseCode", required = false) String courseCode,
+            @RequestParam(value = "className", required = false) String className,
+            @RequestParam(value = "approved", required = false) boolean approved,
+            @RequestParam(value = "toApprove", required = false) boolean toApprove,
             @RequestParam(value = "campus", required = false) Integer campus,
-            @RequestParam(value = "nome_estudante", required = false) String studentName
+            @RequestParam(value = "studentName", required = false) String studentName
     ) throws Exception {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(this.studentGetAllService.getAllWithMetricsByFilters(campus,
-                        startSemester,
+                .body(this.plaqueService.listPlaqueByFilter(startSemester,
                         endSemester,
                         courseCode,
                         className,
                         approved,
-                        toApproved,
+                        toApprove,
+                        campus,
                         studentName));
     }
 }

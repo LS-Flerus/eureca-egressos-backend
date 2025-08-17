@@ -28,14 +28,6 @@ public class EurecaControllerImpl implements EurecaController {
     ) {
         List<ScaoStudentDto> alumni = eurecaService.getAlumniStudents(courseCode, startSemester, endSemester, tokenAS);
 
-        /*
-        if (semester != null && !semester.isBlank()) {
-            alumni = alumni.stream()
-                    .filter(student -> semester.equals(student.getSemester()))
-                    .toList();
-        }
-        */
-
         return ResponseEntity.ok(alumni);
     }
 }

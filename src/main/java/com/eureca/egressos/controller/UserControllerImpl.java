@@ -2,41 +2,51 @@ package com.eureca.egressos.controller;
 
 import com.eureca.egressos.controller.documentation.UserController;
 import com.eureca.egressos.dto.UserDto;
-import com.eureca.egressos.dto.user.UserCreateRequestDto;
-import com.eureca.egressos.dto.user.UserResponseDto;
 import com.eureca.egressos.service.interfaces.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.UUID;
+
 @RestController
-@RequestMapping("/user")
-@CrossOrigin
-@Validated
+@RequestMapping("/users")
 public class UserControllerImpl implements UserController {
+
     private final UserService userService;
-    @Autowired
+
     public UserControllerImpl(UserService userService) {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> createUser(@Validated @RequestBody UserCreateRequestDto userDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userDto));
+    @Override
+    @PostMapping("/create")
+    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
+        return ResponseEntity.ok(userService.createUser(userDto));
     }
 
+    @Override
+    @PutMapping("/update")
+    public ResponseEntity<UserDto> updateUser(@RequestParam UUID id, @RequestBody UserDto userDto) {
+        return ResponseEntity.ok(userService.updateUser(id, userDto));
+    }
+
+    @Override
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteUser(
-            Authentication authentication) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.deleteUser(authentication.getName()));
+    public ResponseEntity<Void> deleteUser(@RequestParam UUID id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/get")
-    public ResponseEntity<UserResponseDto> getUser(
-            Authentication authentication) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(authentication.getName()));
+    @Override
+    @GetMapping("/getById")
+    public ResponseEntity<UserDto> getUserById(@RequestParam UUID id) {
+        return ResponseEntity.ok(userService.getUserById(id));
+    }
+
+    @Override
+    @GetMapping("/getAll")
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 }

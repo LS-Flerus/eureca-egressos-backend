@@ -1,23 +1,37 @@
 package com.eureca.egressos.controller.documentation;
 
+import com.eureca.egressos.dto.UserDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
-import com.eureca.egressos.dto.user.UserCreateRequestDto;
-import com.eureca.egressos.dto.user.UserResponseDto;
-import org.springframework.security.core.Authentication;
+import java.util.List;
+import java.util.UUID;
 
-@Tag(name = "Usuário", description = "Serviço de Usuário")
+@Tag(name = "Usuários", description = "Serviço para gerenciamento de usuários da comissão de formatura")
 public interface UserController {
-    @Operation(description = "Registrar usuário", summary = "Registrar novo usuário no sistema")
-    ResponseEntity<String> createUser(
-            @RequestBody UserCreateRequestDto userDto);
 
-    @Operation(description = "Deletar usuário", summary = "Remover usuário do sistema.")
-    ResponseEntity<String> deleteUser(Authentication authentication);
+    @Operation(summary = "Criar novo usuário")
+    ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto);
 
-    @Operation(description = "Ler usuário", summary = "Pegar informações do usuário no sistema.")
-    ResponseEntity<UserResponseDto> getUser(Authentication authentication);
+    @Operation(summary = "Atualizar usuário existente")
+    ResponseEntity<UserDto> updateUser(
+            @Parameter(name = "id", description = "ID do usuário", required = true)
+            @PathVariable UUID id,
+            @RequestBody UserDto userDto);
+
+    @Operation(summary = "Deletar usuário")
+    ResponseEntity<Void> deleteUser(
+            @Parameter(name = "id", description = "ID do usuário", required = true)
+            @PathVariable UUID id);
+
+    @Operation(summary = "Buscar usuário por ID")
+    ResponseEntity<UserDto> getUserById(
+            @Parameter(name = "id", description = "ID do usuário", required = true)
+            @PathVariable UUID id);
+
+    @Operation(summary = "Listar todos os usuários")
+    ResponseEntity<List<UserDto>> getAllUsers();
 }
