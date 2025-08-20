@@ -17,9 +17,9 @@ public interface PlaqueService {
             String endSemester,
             String courseCode,
             String className,
-            boolean approved,
-            boolean toAprove,
-            int campus,
+            Boolean approved,
+            Boolean toApprove,
+            String campus,
             String studentName
             );
 }

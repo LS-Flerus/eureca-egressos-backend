@@ -20,7 +20,7 @@ public class PlaqueModel {
     @Column(name = "codigo_curso", nullable = false, length = 20)
     private String courseCode;
 
-    @Column(nullable = false, length = 20)
+    @Column(name = "periodo", nullable = false, length = 20)
     private String semester;
 
     @Column(name = "nome_turma", length = 30)

@@ -62,7 +62,7 @@ public class PlaqueControllerImpl implements PlaqueController {
             @RequestParam(value = "className", required = false) String className,
             @RequestParam(value = "approved", required = false) boolean approved,
             @RequestParam(value = "toApprove", required = false) boolean toApprove,
-            @RequestParam(value = "campus", required = false) Integer campus,
+            @RequestParam(value = "campus", required = false) String campus,
             @RequestParam(value = "studentName", required = false) String studentName
     ) throws Exception {
 

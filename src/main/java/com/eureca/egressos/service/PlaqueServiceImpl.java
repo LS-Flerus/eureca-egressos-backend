@@ -27,9 +27,23 @@ public class PlaqueServiceImpl implements PlaqueService {
     @Override
     @Transactional
     public PlaqueDto createPlaque(PlaqueDto plaqueDto) {
-        PlaqueModel plaque = PlaqueModel.fromDto(plaqueDto);
-        plaque = plaqueRepository.save(plaque);
-        return plaque.toDto();
+        PlaqueModel plaque;
+
+        if (plaqueDto.getId() != null) {
+            plaque = plaqueRepository.findById(plaqueDto.getId())
+                    .orElse(new PlaqueModel());
+
+            plaque.setCourseCode(plaqueDto.getCourseCode());
+            plaque.setSemester(plaqueDto.getSemester());
+            plaque.setClassName(plaqueDto.getClassName());
+            plaque.setApproved(plaqueDto.getApproved());
+            plaque.setToApprove(plaqueDto.getToApprove());
+            plaque.setCampus(plaqueDto.getCampus());
+        } else {
+            plaque = PlaqueModel.fromDto(plaqueDto);
+        }
+
+        return plaqueRepository.save(plaque).toDto();
     }
 
     @Override
@@ -73,60 +87,52 @@ public class PlaqueServiceImpl implements PlaqueService {
             String endSemester,
             String courseCode,
             String className,
-            boolean approved,
-            boolean toApprove,
-            int campus,
+            Boolean approved,
+            Boolean toApprove,
+            String campus,
             String studentName
     ) {
         List<PlaqueModel> allPlaques = plaqueRepository.findAll();
-
-        final Double comparativeStartSemester = startSemester != null ? Double.parseDouble(startSemester) : 9999.9;
-
-        final Double comparativeEndSemester = endSemester != null ? Double.parseDouble(endSemester) : 0.0;
-
+        System.out.println(allPlaques);
         final Set<UUID> plaqueIdsFromStudents =
                 (studentName != null && !studentName.isBlank())
                         ? studentRepository.findByNameContainingIgnoreCase(studentName)
                         .stream()
-                        .map(student -> student.getPlaque().getId()) // ou getPlaqueId()
+                        .map(student -> student.getPlaque().getId())
                         .collect(Collectors.toSet())
                         : Collections.emptySet();
 
-
         return allPlaques.stream()
                 .filter(plaque -> {
-                    if (comparativeStartSemester > Double.parseDouble(plaque.getSemester()) ||
-                            comparativeEndSemester < Double.parseDouble(plaque.getSemester())) {
+                    double semester = Double.parseDouble(plaque.getSemester());
+
+                    if (approved != null && !plaque.getApproved()) {
                         return false;
                     }
 
+                    if (startSemester != null && semester > Double.parseDouble(startSemester)) {
+                        return true;
+                    }
+                    if (endSemester != null && semester < Double.parseDouble(endSemester)) {
+                        return true;
+                    }
                     if (courseCode != null && !courseCode.isEmpty() &&
-                            !courseCode.equals(plaque.getCourseCode())) {
-                        return false;
+                            Arrays.asList(courseCode.split(",")).contains(plaque.getCourseCode())) {
+                        return true;
                     }
-
                     if (className != null && !className.isEmpty() &&
-                            !plaque.getClassName().contains(className)) {
-                        return false;
+                            plaque.getClassName().contains(className)) {
+                        return true;
                     }
 
-                    if (approved == plaque.getApproved()) {
-                        return false;
+                    if (campus != null && Arrays.asList(campus.split(",")).contains(String.valueOf(plaque.getCampus()))) {
+                        return true;
                     }
-
-                    if (toApprove == plaque.getToApprove()) {
-                        return false;
-                    }
-
-                    if (campus > 0 && plaque.getCampus() != campus) {
-                        return false;
-                    }
-
                     if (!plaqueIdsFromStudents.isEmpty() && !plaqueIdsFromStudents.contains(plaque.getId())) {
                         return false;
                     }
 
-                    return true;
+                    return false;
                 })
                 .map(PlaqueModel::toDto)
                 .toList();
