@@ -34,4 +34,7 @@ public interface UserController {
 
     @Operation(summary = "Listar todos os usuários")
     ResponseEntity<List<UserDto>> getAllUsers();
+
+    @Operation(summary = "Listar todos os usuários pelo código do curso")
+    ResponseEntity<List<UserDto>> getAllUsersByCourseCode(@RequestParam String courseCode);
 }

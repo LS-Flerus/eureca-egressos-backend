@@ -11,4 +11,5 @@ public interface UserService {
     void deleteUser(UUID id);
     UserDto getUserById(UUID id);
     List<UserDto> getAllUsers();
+    List<UserDto> getAllUsersByCourseCode(String courseCode);
 }

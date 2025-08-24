@@ -76,4 +76,11 @@ public class UserServiceImpl implements UserService {
                 .map(UserModel::toDto)
                 .toList();
     }
+
+    @Override
+    public List<UserDto> getAllUsersByCourseCode(String courseCode) {
+        return userRepository.getAllByCourseCode(courseCode).stream()
+                .map(UserModel::toDto)
+                .toList();
+    }
 }

@@ -49,4 +49,10 @@ public class UserControllerImpl implements UserController {
     public ResponseEntity<List<UserDto>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
+
+    @Override
+    @GetMapping("/getAllByCourseCode")
+    public ResponseEntity<List<UserDto>> getAllUsersByCourseCode(@RequestParam String courseCode) {
+        return ResponseEntity.ok(userService.getAllUsersByCourseCode(courseCode));
+    }
 }
