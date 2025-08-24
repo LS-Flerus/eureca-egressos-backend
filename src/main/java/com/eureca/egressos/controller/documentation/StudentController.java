@@ -27,4 +27,7 @@ public interface StudentController {
 
     @Operation(summary = "Listar todos os estudantes")
     ResponseEntity<List<StudentDto>> getAllStudents();
+
+    @Operation(summary = "Listar todos os estudantes de uma placa específica")
+    ResponseEntity<List<StudentDto>> getAllStudentsByPlaqueId(@PathVariable UUID id);
 }

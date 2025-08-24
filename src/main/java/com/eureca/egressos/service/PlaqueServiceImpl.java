@@ -1,10 +1,16 @@
 package com.eureca.egressos.service;
 
 import com.eureca.egressos.dto.PlaqueDto;
+import com.eureca.egressos.dto.StudentDto;
+import com.eureca.egressos.dto.asScao.EurecaProfileDto;
+import com.eureca.egressos.dto.dasScao.ScaoStudentDto;
 import com.eureca.egressos.model.PlaqueModel;
+import com.eureca.egressos.model.StudentModel;
 import com.eureca.egressos.repository.PlaqueRepository;
 import com.eureca.egressos.repository.StudentRepository;
+import com.eureca.egressos.service.interfaces.EurecaService;
 import com.eureca.egressos.service.interfaces.PlaqueService;
+import com.eureca.egressos.service.interfaces.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,17 +23,36 @@ public class PlaqueServiceImpl implements PlaqueService {
 
     private final PlaqueRepository plaqueRepository;
     private final StudentRepository studentRepository;
+    private final StudentService studentService;
+    private final EurecaService eurecaService;
 
     @Autowired
-    public PlaqueServiceImpl(PlaqueRepository plaqueRepository, StudentRepository studentRepository) {
+    public PlaqueServiceImpl(PlaqueRepository plaqueRepository, StudentRepository studentRepository, StudentService studentService, EurecaService eurecaService) {
         this.plaqueRepository = plaqueRepository;
         this.studentRepository = studentRepository;
+        this.studentService = studentService;
+        this.eurecaService = eurecaService;
     }
 
     @Override
     @Transactional
-    public PlaqueDto createPlaque(PlaqueDto plaqueDto) {
+    public PlaqueDto createPlaque(PlaqueDto plaqueDto, String tokenAS) {
         PlaqueModel plaque;
+
+        List<PlaqueDto> plaquesInDb = this.getAllPlaques();
+
+        Set<String> existingPlaques = plaquesInDb.stream()
+                .map(p -> p.getSemester() + "|" + p.getCourseCode())
+                .collect(Collectors.toSet());
+
+        String newPlaqueKey = plaqueDto.getSemester() + "|" + plaqueDto.getCourseCode();
+
+        if (existingPlaques.contains(newPlaqueKey)) {
+            throw new IllegalArgumentException(
+                    String.format("Já existe uma placa para o curso %s no semestre %s.",
+                            plaqueDto.getCourseCode(), plaqueDto.getSemester())
+            );
+        }
 
         if (plaqueDto.getId() != null) {
             plaque = plaqueRepository.findById(plaqueDto.getId())
@@ -39,12 +64,46 @@ public class PlaqueServiceImpl implements PlaqueService {
             plaque.setApproved(plaqueDto.getApproved());
             plaque.setToApprove(plaqueDto.getToApprove());
             plaque.setCampus(plaqueDto.getCampus());
+
         } else {
             plaque = PlaqueModel.fromDto(plaqueDto);
         }
 
-        return plaqueRepository.save(plaque).toDto();
+        PlaqueModel createdPlaque = plaqueRepository.save(plaque);
+        createStudentsForPlaque(createdPlaque, tokenAS);
+
+        return createdPlaque.toDto();
     }
+    private void createStudentsForPlaque(PlaqueModel plaque, String tokenAS) {
+        // EurecaProfileDto profile = eurecaService.getEurecaProfile(tokenAS);
+
+        List<ScaoStudentDto> studentsFromScao = eurecaService.getAlumniStudents(
+                Integer.parseInt(plaque.getCourseCode()),
+                plaque.getSemester(),
+                plaque.getSemester(),
+                tokenAS);
+
+        List<StudentDto> studentsInDb = studentService.getAllStudents();
+
+        Set<String> existingNames = studentsInDb.stream()
+                .map(StudentDto::getName)
+                .collect(Collectors.toSet());
+
+        for(ScaoStudentDto currentStudent : studentsFromScao) {
+            if (!existingNames.contains(currentStudent.getName())) {
+                StudentDto studentDto = new StudentDto();
+
+                studentDto.setName(currentStudent.getName());
+                studentDto.setCourseCode(String.valueOf(currentStudent.getCourseCode()));
+                studentDto.setSemester(currentStudent.getInactivityTerm());
+                studentDto.setPhotoId("");
+
+                studentService.createStudent(studentDto);
+                existingNames.add(currentStudent.getName());
+            }
+        }
+    }
+
 
     @Override
     @Transactional
@@ -69,9 +128,11 @@ public class PlaqueServiceImpl implements PlaqueService {
 
     @Override
     public PlaqueDto getPlaqueById(UUID id) {
-        return plaqueRepository.findById(id)
+        PlaqueDto plaque = plaqueRepository.findById(id)
                 .map(PlaqueModel::toDto)
                 .orElseThrow(() -> new RuntimeException("Plaque not found"));
+
+        return plaque;
     }
 
     @Override

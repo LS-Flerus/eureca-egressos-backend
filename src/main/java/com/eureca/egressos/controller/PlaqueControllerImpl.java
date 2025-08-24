@@ -25,8 +25,8 @@ public class PlaqueControllerImpl implements PlaqueController {
 
     @Override
     @PostMapping("/create")
-    public ResponseEntity<PlaqueDto> createPlaque(@RequestBody PlaqueDto plaqueDto) {
-        return ResponseEntity.ok(plaqueService.createPlaque(plaqueDto));
+    public ResponseEntity<PlaqueDto> createPlaque(@RequestBody PlaqueDto plaqueDto, @RequestHeader String tokenAS) {
+        return ResponseEntity.ok(plaqueService.createPlaque(plaqueDto, tokenAS));
     }
 
     @Override

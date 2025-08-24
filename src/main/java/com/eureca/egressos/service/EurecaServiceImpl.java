@@ -1,5 +1,6 @@
 package com.eureca.egressos.service;
 
+import com.eureca.egressos.dto.asScao.EurecaProfileDto;
 import com.eureca.egressos.dto.dasScao.ScaoStudentDto;
 import com.eureca.egressos.model.dasScao.ScaoStudentModel;
 import com.eureca.egressos.service.interfaces.EurecaService;
@@ -16,6 +17,7 @@ import static com.eureca.egressos.util.Constants.*;
 public class EurecaServiceImpl implements EurecaService {
 
     private final String baseUrl = dasUrl;
+    private final String baseAsUrl = asUrl;
     private final RestTemplate restTemplate;
 
     public EurecaServiceImpl() {
@@ -56,6 +58,31 @@ public class EurecaServiceImpl implements EurecaService {
             } else {
                 throw e;
             }
+        }
+    }
+
+    public EurecaProfileDto getEurecaProfile(String tokenAS) {
+        String url = baseAsUrl+"/profile";
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("token-de-autenticacao", tokenAS);
+            headers.set("Content-Type", "application/json");
+
+            HttpEntity<?> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<EurecaProfileDto> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    new ParameterizedTypeReference<>() {}
+            );
+
+            EurecaProfileDto profile = response.getBody();
+            System.out.println(profile);
+            return profile;
+
+        } catch (HttpClientErrorException e) {
+            throw e;
         }
     }
 }

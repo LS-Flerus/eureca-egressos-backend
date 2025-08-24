@@ -49,4 +49,10 @@ public class StudentControllerImpl implements StudentController {
     public ResponseEntity<List<StudentDto>> getAllStudents() {
         return ResponseEntity.ok(studentService.getAllStudents());
     }
+
+    @Override
+    @GetMapping("/getAllByPlaqueId")
+    public ResponseEntity<List<StudentDto>> getAllStudentsByPlaqueId(@RequestParam UUID id) {
+        return ResponseEntity.ok(studentService.getAllStudents());
+    }
 }

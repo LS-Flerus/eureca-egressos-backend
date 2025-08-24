@@ -14,7 +14,9 @@ import java.util.UUID;
 public interface PlaqueController {
 
     @Operation(summary = "Criar nova placa")
-    ResponseEntity<PlaqueDto> createPlaque(@RequestBody PlaqueDto plaqueDto);
+    ResponseEntity<PlaqueDto> createPlaque(
+            @RequestBody PlaqueDto plaqueDto,
+            @RequestHeader("token-de-autenticacao") String tokenAS);
 
     @Operation(summary = "Atualizar placa existente")
     ResponseEntity<PlaqueDto> updatePlaque(
