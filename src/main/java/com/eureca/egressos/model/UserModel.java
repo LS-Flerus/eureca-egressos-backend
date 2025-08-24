@@ -22,10 +22,10 @@ public class UserModel {
     @Column(unique = true, nullable = false, length = 20)
     private String login;
 
-    @Column(length = 255)
+    @Column(name = "senha", length = 255)
     private String password;
 
-    @Column(nullable = false, length = 50)
+    @Column(name = "nome", nullable = false, length = 50)
     private String name;
 
     @Column(name = "codigo_de_curso", nullable = false, length = 20)

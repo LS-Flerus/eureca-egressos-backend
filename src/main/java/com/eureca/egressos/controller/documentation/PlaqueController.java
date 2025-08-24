@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,4 +33,7 @@ public interface PlaqueController {
 
     @Operation(summary = "Listar todas as placas")
     ResponseEntity<List<PlaqueDto>> getAllPlaques();
+
+    @Operation(summary = "Listar todas as placas de um curso")
+    ResponseEntity<Collection<?>> getPlaqueByCourseCode(@RequestParam String courseCode);
 }

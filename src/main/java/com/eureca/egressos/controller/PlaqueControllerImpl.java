@@ -44,7 +44,7 @@ public class PlaqueControllerImpl implements PlaqueController {
 
     @Override
     @GetMapping("/getById")
-    public ResponseEntity<PlaqueDto> getPlaqueById(@RequestParam UUID id) {
+    public ResponseEntity<PlaqueDto> getPlaqueById(@RequestParam(value = "id") UUID id) {
         return ResponseEntity.ok(plaqueService.getPlaqueById(id));
     }
 
@@ -52,6 +52,12 @@ public class PlaqueControllerImpl implements PlaqueController {
     @GetMapping("/getAll")
     public ResponseEntity<List<PlaqueDto>> getAllPlaques() {
         return ResponseEntity.ok(plaqueService.getAllPlaques());
+    }
+
+    @Override
+    @GetMapping("/getByCourseCode")
+    public ResponseEntity<Collection<?>> getPlaqueByCourseCode(@RequestParam String courseCode) {
+        return ResponseEntity.ok(plaqueService.getAllPlaquesByCourse(courseCode));
     }
 
     @GetMapping("/getByFilter")

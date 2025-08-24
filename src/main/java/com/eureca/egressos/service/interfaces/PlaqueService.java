@@ -12,6 +12,7 @@ public interface PlaqueService {
     void deletePlaque(UUID id);
     PlaqueDto getPlaqueById(UUID id);
     List<PlaqueDto> getAllPlaques();
+    List<PlaqueDto> getAllPlaquesByCourse(String courseCode);
     Collection<PlaqueDto> listPlaqueByFilter(
             String startSemester,
             String endSemester,

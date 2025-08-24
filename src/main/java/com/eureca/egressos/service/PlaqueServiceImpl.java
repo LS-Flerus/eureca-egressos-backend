@@ -96,7 +96,7 @@ public class PlaqueServiceImpl implements PlaqueService {
                 studentDto.setName(currentStudent.getName());
                 studentDto.setCourseCode(String.valueOf(currentStudent.getCourseCode()));
                 studentDto.setSemester(currentStudent.getInactivityTerm());
-                studentDto.setPhotoId("");
+                studentDto.setPlaqueId(plaque.getId());
 
                 studentService.createStudent(studentDto);
                 existingNames.add(currentStudent.getName());
@@ -143,6 +143,13 @@ public class PlaqueServiceImpl implements PlaqueService {
     }
 
     @Override
+    public List<PlaqueDto> getAllPlaquesByCourse(String courseCode) {
+        return plaqueRepository.findByCourseCode(courseCode).stream()
+                .map(PlaqueModel::toDto)
+                .toList();
+    }
+
+    @Override
     public Collection<PlaqueDto> listPlaqueByFilter(
             String startSemester,
             String endSemester,
@@ -171,6 +178,10 @@ public class PlaqueServiceImpl implements PlaqueService {
                         return false;
                     }
 
+                    if (!plaqueIdsFromStudents.isEmpty() && !plaqueIdsFromStudents.contains(plaque.getId())) {
+                        return false;
+                    }
+
                     if (startSemester != null && semester > Double.parseDouble(startSemester)) {
                         return true;
                     }
@@ -188,9 +199,6 @@ public class PlaqueServiceImpl implements PlaqueService {
 
                     if (campus != null && Arrays.asList(campus.split(",")).contains(String.valueOf(plaque.getCampus()))) {
                         return true;
-                    }
-                    if (!plaqueIdsFromStudents.isEmpty() && !plaqueIdsFromStudents.contains(plaque.getId())) {
-                        return false;
                     }
 
                     return false;
