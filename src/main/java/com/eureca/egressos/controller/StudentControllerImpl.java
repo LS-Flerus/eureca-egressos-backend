@@ -53,6 +53,6 @@ public class StudentControllerImpl implements StudentController {
     @Override
     @GetMapping("/getAllByPlaqueId")
     public ResponseEntity<List<StudentDto>> getAllStudentsByPlaqueId(@RequestParam UUID id) {
-        return ResponseEntity.ok(studentService.getAllStudents());
+        return ResponseEntity.ok(studentService.getStudentsByPlaqueId(id));
     }
 }

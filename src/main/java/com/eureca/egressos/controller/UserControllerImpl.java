@@ -3,7 +3,9 @@ package com.eureca.egressos.controller;
 import com.eureca.egressos.controller.documentation.UserController;
 import com.eureca.egressos.dto.UserDto;
 import com.eureca.egressos.service.interfaces.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -54,5 +56,11 @@ public class UserControllerImpl implements UserController {
     @GetMapping("/getAllByCourseCode")
     public ResponseEntity<List<UserDto>> getAllUsersByCourseCode(@RequestParam String courseCode) {
         return ResponseEntity.ok(userService.getAllUsersByCourseCode(courseCode));
+    }
+
+    @GetMapping("/getLoggedUser")
+    public ResponseEntity<UserDto> getLoggedUser(
+            Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getLoggedUser(authentication.getName()));
     }
 }

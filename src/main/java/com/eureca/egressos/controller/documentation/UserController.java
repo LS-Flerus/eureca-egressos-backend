@@ -1,10 +1,12 @@
 package com.eureca.egressos.controller.documentation;
 
 import com.eureca.egressos.dto.UserDto;
+import com.eureca.egressos.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,4 +39,7 @@ public interface UserController {
 
     @Operation(summary = "Listar todos os usuários pelo código do curso")
     ResponseEntity<List<UserDto>> getAllUsersByCourseCode(@RequestParam String courseCode);
+
+    @Operation(description = "Ler usuário logado", summary = "Pegar informações do usuário atualmente logado no sistema.")
+    ResponseEntity<UserDto> getLoggedUser(Authentication authentication);
 }

@@ -83,4 +83,12 @@ public class UserServiceImpl implements UserService {
                 .map(UserModel::toDto)
                 .toList();
     }
+
+    @Override
+    public UserDto getLoggedUser(String userName) {
+        UserModel user = userRepository.findByName(userName)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userName));
+
+        return user.toDto();
+    }
 }

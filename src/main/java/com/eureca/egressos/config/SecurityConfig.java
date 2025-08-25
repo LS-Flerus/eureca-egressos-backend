@@ -34,7 +34,7 @@ public class SecurityConfig {
     private static final String[] PERMIT_LIST_URL = { "/api/v1/auth/**", "/v2/api-docs", "/v3/api-docs",
             "/v3/api-docs/**", "/swagger-resources", "/swagger-resources/**", "/configuration/ui",
             "/configuration/security", "/swagger-ui/**", "/webjars/**", "/swagger-ui.html", "/api/auth/**",
-            "/api/test/**", "/authenticate", "/user/register", "/server/ping", "/**" };
+            "/api/test/**", "/authenticate", "/user/register", "/server/ping", "/plaque/**", "/plaqueSessions/**" };
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {

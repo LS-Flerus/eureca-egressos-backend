@@ -10,5 +10,5 @@ import java.util.UUID;
 @Repository
 public interface StudentRepository extends JpaRepository<StudentModel, UUID> {
     List<StudentModel> findByNameContainingIgnoreCase(String name);
-    List<StudentModel> findByPlaqueId(UUID plaqueId);
+    List<StudentModel> findByPlaque_Id(UUID plaqueId);
 }
