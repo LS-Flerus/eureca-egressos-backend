@@ -25,6 +25,9 @@ public class PhotoModel {
     @JoinColumn(name = "id_placa", nullable = false)
     private PlaqueModel plaque;
 
+    @Column(name = "foto_principal")
+    private boolean mainPhoto;
+
     public PhotoDto toDto() {
         PhotoDto dto = new PhotoDto();
         dto.setId(id);
@@ -32,6 +35,7 @@ public class PhotoModel {
         if (plaque != null) {
             dto.setPlaqueId(plaque.getId());
         }
+        dto.setMainPhoto(mainPhoto);
         return dto;
     }
 
@@ -45,6 +49,7 @@ public class PhotoModel {
                 .id(dto.getId())
                 .plaque(plaque)
                 .photoId(dto.getPhotoId())
+                .mainPhoto(dto.isMainPhoto())
                 .build();
     }
 }

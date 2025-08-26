@@ -31,6 +31,7 @@ public class PhotoServiceImpl implements PhotoService {
         PhotoModel photo = PhotoModel.builder()
                 .photoId(photoDto.getPhotoId())
                 .plaque(plaque)
+                .mainPhoto(photoDto.isMainPhoto())
                 .build();
 
         photoRepository.save(photo);

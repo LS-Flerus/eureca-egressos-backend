@@ -11,4 +11,5 @@ public class PhotoDto {
     private UUID id;
     private UUID plaqueId;
     private String photoId;
+    private boolean mainPhoto;
 }

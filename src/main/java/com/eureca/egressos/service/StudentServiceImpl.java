@@ -82,7 +82,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<StudentDto> getStudentsByPlaqueId(UUID plaqueId) {
-        System.out.println(plaqueId);
+
         return studentRepository.findByPlaque_Id(plaqueId).stream()
                 .map(StudentModel::toDto)
                 .toList();

@@ -1,14 +1,17 @@
 package com.eureca.egressos.service;
 
+import com.eureca.egressos.dto.PhotoDto;
 import com.eureca.egressos.dto.PlaqueDto;
 import com.eureca.egressos.dto.StudentDto;
 import com.eureca.egressos.dto.asScao.EurecaProfileDto;
 import com.eureca.egressos.dto.dasScao.ScaoStudentDto;
 import com.eureca.egressos.model.PlaqueModel;
 import com.eureca.egressos.model.StudentModel;
+import com.eureca.egressos.repository.PhotoRepository;
 import com.eureca.egressos.repository.PlaqueRepository;
 import com.eureca.egressos.repository.StudentRepository;
 import com.eureca.egressos.service.interfaces.EurecaService;
+import com.eureca.egressos.service.interfaces.PhotoService;
 import com.eureca.egressos.service.interfaces.PlaqueService;
 import com.eureca.egressos.service.interfaces.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +26,18 @@ public class PlaqueServiceImpl implements PlaqueService {
 
     private final PlaqueRepository plaqueRepository;
     private final StudentRepository studentRepository;
+    private final PhotoRepository photoRepository;
     private final StudentService studentService;
     private final EurecaService eurecaService;
-
+    private final PhotoService photoService;
     @Autowired
-    public PlaqueServiceImpl(PlaqueRepository plaqueRepository, StudentRepository studentRepository, StudentService studentService, EurecaService eurecaService) {
+    public PlaqueServiceImpl(PlaqueRepository plaqueRepository, StudentRepository studentRepository, PhotoRepository photoRepository, StudentService studentService, EurecaService eurecaService, PhotoService photoService) {
         this.plaqueRepository = plaqueRepository;
         this.studentRepository = studentRepository;
+        this.photoRepository = photoRepository;
         this.studentService = studentService;
         this.eurecaService = eurecaService;
+        this.photoService = photoService;
     }
 
     @Override
@@ -71,8 +77,18 @@ public class PlaqueServiceImpl implements PlaqueService {
 
         PlaqueModel createdPlaque = plaqueRepository.save(plaque);
         createStudentsForPlaque(createdPlaque, tokenAS);
+        createPhotoForPlaque(plaqueDto.getId());
 
         return createdPlaque.toDto();
+    }
+    private void createPhotoForPlaque(UUID idPlaque) {
+        // EurecaProfileDto profile = eurecaService.getEurecaProfile(tokenAS);
+
+        PhotoDto photoDto = new PhotoDto();
+        photoDto.setMainPhoto(true);
+        photoDto.setPlaqueId(idPlaque);
+        photoDto.setPhotoId("");
+        photoService.createPhoto(photoDto);
     }
     private void createStudentsForPlaque(PlaqueModel plaque, String tokenAS) {
         // EurecaProfileDto profile = eurecaService.getEurecaProfile(tokenAS);
@@ -161,7 +177,7 @@ public class PlaqueServiceImpl implements PlaqueService {
             String studentName
     ) {
         List<PlaqueModel> allPlaques = plaqueRepository.findAll();
-        System.out.println(allPlaques);
+
         final Set<UUID> plaqueIdsFromStudents =
                 (studentName != null && !studentName.isBlank())
                         ? studentRepository.findByNameContainingIgnoreCase(studentName)

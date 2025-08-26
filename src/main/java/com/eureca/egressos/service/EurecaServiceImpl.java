@@ -78,7 +78,7 @@ public class EurecaServiceImpl implements EurecaService {
             );
 
             EurecaProfileDto profile = response.getBody();
-            System.out.println(profile);
+
             return profile;
 
         } catch (HttpClientErrorException e) {
