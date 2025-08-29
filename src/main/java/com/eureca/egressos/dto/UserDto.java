@@ -9,9 +9,8 @@ import java.util.UUID;
 @Setter
 public class UserDto {
     private UUID id;
-    private String login;
-    private String password;
     private String name;
+    private String enrollment;
     private String courseCode;
     private UUID plaqueId;
 }

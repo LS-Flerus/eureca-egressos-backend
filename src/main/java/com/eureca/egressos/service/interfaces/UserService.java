@@ -12,5 +12,5 @@ public interface UserService {
     UserDto getUserById(UUID id);
     List<UserDto> getAllUsers();
     List<UserDto> getAllUsersByCourseCode(String courseCode);
-    UserDto getLoggedUser(String username);
+    UserDto getUserByEnrollment(String username);
 }

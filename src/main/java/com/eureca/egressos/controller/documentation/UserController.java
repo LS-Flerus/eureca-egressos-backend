@@ -41,5 +41,7 @@ public interface UserController {
     ResponseEntity<List<UserDto>> getAllUsersByCourseCode(@RequestParam String courseCode);
 
     @Operation(description = "Ler usuário logado", summary = "Pegar informações do usuário atualmente logado no sistema.")
-    ResponseEntity<UserDto> getLoggedUser(Authentication authentication);
+    ResponseEntity<UserDto> getUserByEnrollment(
+            @Parameter(name = "enrollment", description = "matricula do estudante", required = true)
+            @PathVariable String enrollment);
 }

@@ -17,12 +17,10 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -33,9 +31,8 @@ public class UserServiceImpl implements UserService {
             plaque = PlaqueModel.builder().id(userDTO.getPlaqueId()).build();
         }
         UserModel user = UserModel.builder()
-                .login(userDTO.getLogin())
-                .password(passwordEncoder.encode(userDTO.getPassword()))
                 .name(userDTO.getName())
+                .enrollment(userDTO.getEnrollment())
                 .courseCode(userDTO.getCourseCode())
                 .plaque(plaque)
                 .build();
@@ -49,10 +46,9 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUser(UUID id, UserDto userDto) {
         UserModel existing = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-        existing.setLogin(userDto.getLogin());
         existing.setName(userDto.getName());
+        existing.setEnrollment(userDto.getEnrollment());
         existing.setCourseCode(userDto.getCourseCode());
-        existing.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
         return userRepository.save(existing).toDto();
     }
@@ -85,10 +81,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getLoggedUser(String userName) {
-        UserModel user = userRepository.findByName(userName)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userName));
+    public UserDto getUserByEnrollment(String enrollment) {
+        UserModel user = userRepository.findByEnrollment(enrollment)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + enrollment));
 
         return user.toDto();
     }
+
 }

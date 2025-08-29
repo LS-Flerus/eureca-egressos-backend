@@ -19,14 +19,11 @@ public class UserModel {
     @GeneratedValue
     private UUID id;
 
-    @Column(unique = true, nullable = false, length = 20)
-    private String login;
-
-    @Column(name = "senha", length = 255)
-    private String password;
-
     @Column(name = "nome", nullable = false, length = 50)
     private String name;
+
+    @Column(name = "matricula", length = 255)
+    private String enrollment;
 
     @Column(name = "codigo_de_curso", nullable = false, length = 20)
     private String courseCode;
@@ -38,9 +35,8 @@ public class UserModel {
     public UserDto toDto() {
         UserDto dto = new UserDto();
         dto.setId(this.id);
-        dto.setLogin(this.login);
-        dto.setPassword(this.password);
         dto.setName(this.name);
+        dto.setEnrollment(this.enrollment);
         dto.setCourseCode(this.courseCode);
         dto.setPlaqueId(this.plaque != null ? this.plaque.getId() : null);
         return dto;
