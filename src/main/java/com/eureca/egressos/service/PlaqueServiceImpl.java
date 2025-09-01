@@ -77,7 +77,7 @@ public class PlaqueServiceImpl implements PlaqueService {
 
         PlaqueModel createdPlaque = plaqueRepository.save(plaque);
         createStudentsForPlaque(createdPlaque, tokenAS);
-        createPhotoForPlaque(plaqueDto.getId());
+        createPhotoForPlaque(createdPlaque.getId());
 
         return createdPlaque.toDto();
     }

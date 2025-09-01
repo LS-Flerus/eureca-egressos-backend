@@ -58,7 +58,7 @@ public class UserControllerImpl implements UserController {
         return ResponseEntity.ok(userService.getAllUsersByCourseCode(courseCode));
     }
 
-    @GetMapping("/getLoggedUser")
+    @GetMapping("/getUserByEnrollment")
     public ResponseEntity<UserDto> getUserByEnrollment(@RequestParam String enrollment) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserByEnrollment(enrollment));
     }
