@@ -179,7 +179,7 @@ public class PlaqueServiceImpl implements PlaqueService {
         List<PlaqueModel> allPlaques = plaqueRepository.findAll();
 
         final Set<UUID> plaqueIdsFromStudents =
-                (studentName != null && !studentName.isBlank())
+                (studentName != null && studentName != "" && !studentName.isBlank())
                         ? studentRepository.findByNameContainingIgnoreCase(studentName)
                         .stream()
                         .map(student -> student.getPlaque().getId())
@@ -194,14 +194,14 @@ public class PlaqueServiceImpl implements PlaqueService {
                         return false;
                     }
 
-                    if (!plaqueIdsFromStudents.isEmpty() && !plaqueIdsFromStudents.contains(plaque.getId())) {
-                        return false;
-                    }
-
-                    if (startSemester != null && semester > Double.parseDouble(startSemester)) {
+                    if (!plaqueIdsFromStudents.isEmpty() && plaqueIdsFromStudents.contains(plaque.getId())) {
                         return true;
                     }
-                    if (endSemester != null && semester < Double.parseDouble(endSemester)) {
+
+                    if (startSemester != null && startSemester != "" && semester > Double.parseDouble(startSemester)) {
+                        return true;
+                    }
+                    if (endSemester != null && endSemester != "" && semester < Double.parseDouble(endSemester)) {
                         return true;
                     }
                     if (courseCode != null && !courseCode.isEmpty() &&
