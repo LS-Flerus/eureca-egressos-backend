@@ -8,11 +8,11 @@
 		<version>3.4.2</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.grimoire</groupId>
+	<groupId>com.egressos</groupId>
 	<artifactId>grimoire</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>grimoire</name>
-	<description>&quot;A web API for managing RPG resources and data&quot;</description>
+	<name>eureca-egressos</name>
+	<description>&quot;Sistema de placas de egressos da UFCG&quot;</description>
 	<url/>
 	<licenses>
 		<license/>
