@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.egressos</groupId>
-	<artifactId>grimoire</artifactId>
+	<artifactId>egressos</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>eureca-egressos</name>
 	<description>&quot;Sistema de placas de egressos da UFCG&quot;</description>
