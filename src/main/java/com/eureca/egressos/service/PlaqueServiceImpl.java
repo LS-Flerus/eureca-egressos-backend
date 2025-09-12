@@ -233,6 +233,10 @@ public class PlaqueServiceImpl implements PlaqueService {
                         .collect(Collectors.toSet())
                         : Collections.emptySet();
 
+        final String startSemesterDefault = (startSemester != null && !startSemester.isBlank()) ? startSemester : "0000.0";
+
+        final String endSemesterDefault = (endSemester != null && !endSemester.isBlank()) ? endSemester : "9999.9";
+
         return allPlaques.stream()
                 .filter(plaque -> {
                     double semester = Double.parseDouble(plaque.getSemester());
@@ -244,11 +248,7 @@ public class PlaqueServiceImpl implements PlaqueService {
                     if (!plaqueIdsFromStudents.isEmpty() && plaqueIdsFromStudents.contains(plaque.getId())) {
                         return true;
                     }
-
-                    if (startSemester != null && startSemester != "" && semester > Double.parseDouble(startSemester)) {
-                        return true;
-                    }
-                    if (endSemester != null && endSemester != "" && semester < Double.parseDouble(endSemester)) {
+                    if (Double.parseDouble(startSemesterDefault) <= semester && semester <= Double.parseDouble(endSemesterDefault) ) {
                         return true;
                     }
                     if (courseCode != null && !courseCode.isEmpty() &&
