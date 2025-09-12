@@ -4,6 +4,7 @@ import com.eureca.egressos.dto.PhotoDto;
 import com.eureca.egressos.dto.PlaqueDto;
 import com.eureca.egressos.dto.StudentDto;
 import com.eureca.egressos.dto.asScao.EurecaProfileDto;
+import com.eureca.egressos.dto.dasScao.ScaoCoursesDto;
 import com.eureca.egressos.dto.dasScao.ScaoStudentDto;
 import com.eureca.egressos.model.PlaqueModel;
 import com.eureca.egressos.model.StudentModel;
@@ -79,8 +80,54 @@ public class PlaqueServiceImpl implements PlaqueService {
         createStudentsForPlaque(createdPlaque, tokenAS);
         createPhotoForPlaque(createdPlaque.getId());
 
+        System.out.println("Sucesso: " + createdPlaque.getClassName());
+        System.out.println(createdPlaque);
         return createdPlaque.toDto();
     }
+
+    @Override
+    @Transactional
+    public void creatingAndPraying(String tokenAS) {
+        List<ScaoCoursesDto> courses = eurecaService.getActiveCourses();
+        PlaqueDto plaque = new PlaqueDto();
+        String semester = "2023.2";
+        for(ScaoCoursesDto currentCourse : courses) {
+            while (!semester.equals("1999.2")) {
+                plaque.setCourseCode(String.valueOf(currentCourse.getCodigoDoCurso()));
+                plaque.setSemester(semester);
+                plaque.setClassName(currentCourse.getDescricao() + " [" + currentCourse.getCodigoDoCurso() + "] - " + semester);
+                plaque.setCampus(currentCourse.getCampus());
+                plaque.setApproved(true);
+                plaque.setToApprove(false);
+                try {
+                    createPlaque(plaque, tokenAS);
+                } catch (Exception e) {
+                    System.out.println("Plaque:");
+                    System.out.println(plaque);
+                    System.out.println(e);
+                }
+                plaque = new PlaqueDto();
+                semester = semesterDecreaser(semester);
+            }
+            semester = "2023.2";
+        }
+    }
+
+    private String semesterDecreaser(String semester) {
+        String decreasedSemester;
+        System.out.println(semester);
+        String[] splitedSemester = semester.split("\\.");
+        System.out.println(Arrays.toString(splitedSemester));
+        int integerYear = Integer.parseInt(splitedSemester[0]);
+        int integerSemester =Integer.parseInt(splitedSemester[1]);
+        if (integerSemester == 1){
+            decreasedSemester = String.valueOf(integerYear - 1) + ".2";
+        } else {
+            decreasedSemester = String.valueOf(integerYear) + "." + String.valueOf(integerSemester - 1);
+        }
+        return decreasedSemester;
+    }
+
     private void createPhotoForPlaque(UUID idPlaque) {
         // EurecaProfileDto profile = eurecaService.getEurecaProfile(tokenAS);
 
@@ -219,6 +266,11 @@ public class PlaqueServiceImpl implements PlaqueService {
 
                     return false;
                 })
+                .sorted(
+                        Comparator.comparing(PlaqueModel::getCampus)
+                                .thenComparing(PlaqueModel::getCourseCode)
+                                .thenComparing(p -> Double.parseDouble(p.getSemester()) )
+                )
                 .map(PlaqueModel::toDto)
                 .toList();
     }

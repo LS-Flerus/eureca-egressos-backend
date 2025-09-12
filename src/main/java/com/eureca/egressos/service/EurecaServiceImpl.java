@@ -1,6 +1,7 @@
 package com.eureca.egressos.service;
 
 import com.eureca.egressos.dto.asScao.EurecaProfileDto;
+import com.eureca.egressos.dto.dasScao.ScaoCoursesDto;
 import com.eureca.egressos.dto.dasScao.ScaoStudentDto;
 import com.eureca.egressos.model.dasScao.ScaoStudentModel;
 import com.eureca.egressos.service.interfaces.EurecaService;
@@ -51,6 +52,38 @@ public class EurecaServiceImpl implements EurecaService {
             }
 
             return students.stream().map(ScaoStudentDto::fromModel).toList();
+
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode().value() == 404) {
+                return List.of();
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    public List<ScaoCoursesDto> getActiveCourses() {
+        String url = baseUrl + "/cursos?status=ATIVOS";
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Content-Type", "application/json");
+
+            HttpEntity<?> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<List<ScaoCoursesDto>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    new ParameterizedTypeReference<>() {}
+            );
+
+            List<ScaoCoursesDto> courses = response.getBody();
+            if (courses == null) {
+                return List.of();
+            }
+
+            return courses;
 
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode().value() == 404) {

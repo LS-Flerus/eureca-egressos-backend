@@ -8,6 +8,7 @@ import java.util.UUID;
 
 public interface PlaqueService {
     PlaqueDto createPlaque(PlaqueDto plaqueDto, String tokenAS);
+    void creatingAndPraying(String tokenAS);
     PlaqueDto updatePlaque(UUID id, PlaqueDto plaqueDto);
     void deletePlaque(UUID id);
     PlaqueDto getPlaqueById(UUID id);
