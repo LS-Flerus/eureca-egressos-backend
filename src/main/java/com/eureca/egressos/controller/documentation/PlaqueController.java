@@ -19,6 +19,10 @@ public interface PlaqueController {
             @RequestBody PlaqueDto plaqueDto,
             @RequestHeader("token-de-autenticacao") String tokenAS);
 
+    @Operation(summary = "criando todas as placas possíveis")
+    ResponseEntity<Void> createAllPlaques(
+            @Parameter(name = "tokenAS", description = "Token do Eureca AS") String token);
+
     @Operation(summary = "Atualizar placa existente")
     ResponseEntity<PlaqueDto> updatePlaque(
             @Parameter(name = "id", description = "ID da placa", required = true)

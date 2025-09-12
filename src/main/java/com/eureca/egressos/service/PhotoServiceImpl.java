@@ -77,6 +77,11 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public List<PhotoDto> getPhotosByPlaqueId(UUID plaqueId) {
+        System.out.println(plaqueId);
+        List retorno = photoRepository.findByPlaqueId(plaqueId).stream()
+                .map(PhotoModel::toDto)
+                .toList();
+        System.out.println(retorno);
         return photoRepository.findByPlaqueId(plaqueId).stream()
                 .map(PhotoModel::toDto)
                 .toList();
