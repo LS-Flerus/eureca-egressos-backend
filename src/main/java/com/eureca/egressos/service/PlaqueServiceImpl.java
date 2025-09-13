@@ -226,50 +226,70 @@ public class PlaqueServiceImpl implements PlaqueService {
         List<PlaqueModel> allPlaques = plaqueRepository.findAll();
 
         final Set<UUID> plaqueIdsFromStudents =
-                (studentName != null && studentName != "" && !studentName.isBlank())
+                (studentName != null && !studentName.isBlank())
                         ? studentRepository.findByNameContainingIgnoreCase(studentName)
                         .stream()
                         .map(student -> student.getPlaque().getId())
                         .collect(Collectors.toSet())
                         : Collections.emptySet();
 
-        final String startSemesterDefault = (startSemester != null && !startSemester.isBlank()) ? startSemester : "0000.0";
+        final List<String> courseCodeList =
+                (courseCode != null && !courseCode.isBlank())
+                        ? Arrays.asList(courseCode.split(","))
+                        : Collections.emptyList();
 
-        final String endSemesterDefault = (endSemester != null && !endSemester.isBlank()) ? endSemester : "9999.9";
+        final List<String> campusList =
+                (campus != null && !campus.isBlank())
+                        ? Arrays.asList(campus.split(","))
+                        : Collections.emptyList();
 
         return allPlaques.stream()
                 .filter(plaque -> {
-                    double semester = Double.parseDouble(plaque.getSemester());
-
-                    if (approved != null && !plaque.getApproved()) {
+                    double semester;
+                    try {
+                        semester = Double.parseDouble(plaque.getSemester());
+                    } catch (Exception e) {
                         return false;
                     }
 
-                    if (!plaqueIdsFromStudents.isEmpty() && plaqueIdsFromStudents.contains(plaque.getId())) {
-                        return true;
-                    }
-                    if (Double.parseDouble(startSemesterDefault) <= semester && semester <= Double.parseDouble(endSemesterDefault) ) {
-                        return true;
-                    }
-                    if (courseCode != null && !courseCode.isEmpty() &&
-                            Arrays.asList(courseCode.split(",")).contains(plaque.getCourseCode())) {
-                        return true;
-                    }
-                    if (className != null && !className.isEmpty() &&
-                            plaque.getClassName().contains(className)) {
-                        return true;
+                    if (!plaqueIdsFromStudents.isEmpty() && !plaqueIdsFromStudents.contains(plaque.getId())) {
+                        return false;
                     }
 
-                    if (campus != null && Arrays.asList(campus.split(",")).contains(String.valueOf(plaque.getCampus()))) {
-                        return true;
+                    if (startSemester != null && !startSemester.isBlank()) {
+                        double start = Double.parseDouble(startSemester);
+                        if (semester < start) {
+                            return false;
+                        }
                     }
 
-                    return false;
+                    if (endSemester != null && !endSemester.isBlank()) {
+                        double end = Double.parseDouble(endSemester);
+                        if (semester > end) {
+                            return false;
+                        }
+                    }
+
+                    if (!courseCodeList.isEmpty() && !courseCodeList.contains(plaque.getCourseCode())) {
+                        return false;
+                    }
+
+                    if (className != null && !className.isBlank()) {
+                        if (plaque.getClassName() == null || !plaque.getClassName().contains(className)) {
+                            return false;
+                        }
+                    }
+
+                    if (!campusList.isEmpty() && !campusList.contains(String.valueOf(plaque.getCampus()))) {
+                        return false;
+                    }
+
+                    return true;
                 })
                 .sorted(
                         Comparator.comparing(PlaqueModel::getCampus)
                                 .thenComparing(PlaqueModel::getCourseCode)
-                                .thenComparing(p -> Double.parseDouble(p.getSemester()) )
+                                .thenComparing(p -> Double.parseDouble(p.getSemester()))
                 )
                 .map(PlaqueModel::toDto)
                 .toList();
