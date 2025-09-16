@@ -30,6 +30,13 @@ public class PlaqueControllerImpl implements PlaqueController {
     }
 
     @Override
+    @PostMapping("/createAll")
+    public ResponseEntity<Void> createAllPlaques(@RequestParam String tokenAS) {
+        plaqueService.creatingAndPraying(tokenAS);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
     @PutMapping("/update")
     public ResponseEntity<PlaqueDto> updatePlaque(@RequestParam UUID id, @RequestBody PlaqueDto plaqueDto) {
         return ResponseEntity.ok(plaqueService.updatePlaque(id, plaqueDto));

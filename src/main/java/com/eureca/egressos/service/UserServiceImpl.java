@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -27,6 +28,11 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto createUser(UserDto userDTO) {
         PlaqueModel plaque = null;
+        Optional<UserModel> existingUser = userRepository.findByEnrollment(userDTO.getEnrollment());
+        if (existingUser.isPresent()) {
+            throw new IllegalArgumentException("Já existe um usuário com a matrícula: " + userDTO.getEnrollment());
+        }
+
         if (userDTO.getPlaqueId() != null) {
             plaque = PlaqueModel.builder().id(userDTO.getPlaqueId()).build();
         }
