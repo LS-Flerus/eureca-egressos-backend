@@ -4,6 +4,7 @@ import com.eureca.egressos.dto.PhotoDto;
 import com.eureca.egressos.dto.PlaqueDto;
 import com.eureca.egressos.dto.StudentDto;
 import com.eureca.egressos.dto.asScao.EurecaProfileDto;
+import com.eureca.egressos.dto.dasScao.ScaoCoursesDto;
 import com.eureca.egressos.dto.dasScao.ScaoStudentDto;
 import com.eureca.egressos.model.PlaqueModel;
 import com.eureca.egressos.model.StudentModel;
@@ -79,8 +80,54 @@ public class PlaqueServiceImpl implements PlaqueService {
         createStudentsForPlaque(createdPlaque, tokenAS);
         createPhotoForPlaque(createdPlaque.getId());
 
+        System.out.println("Sucesso: " + createdPlaque.getClassName());
+        System.out.println(createdPlaque);
         return createdPlaque.toDto();
     }
+
+    @Override
+    @Transactional
+    public void creatingAndPraying(String tokenAS) {
+        List<ScaoCoursesDto> courses = eurecaService.getActiveCourses();
+        PlaqueDto plaque = new PlaqueDto();
+        String semester = "2023.2";
+        for(ScaoCoursesDto currentCourse : courses) {
+            while (!semester.equals("1999.2")) {
+                plaque.setCourseCode(String.valueOf(currentCourse.getCodigoDoCurso()));
+                plaque.setSemester(semester);
+                plaque.setClassName(currentCourse.getDescricao() + " [" + currentCourse.getCodigoDoCurso() + "] - " + semester);
+                plaque.setCampus(currentCourse.getCampus());
+                plaque.setApproved(true);
+                plaque.setToApprove(false);
+                try {
+                    createPlaque(plaque, tokenAS);
+                } catch (Exception e) {
+                    System.out.println("Plaque:");
+                    System.out.println(plaque);
+                    System.out.println(e);
+                }
+                plaque = new PlaqueDto();
+                semester = semesterDecreaser(semester);
+            }
+            semester = "2023.2";
+        }
+    }
+
+    private String semesterDecreaser(String semester) {
+        String decreasedSemester;
+        System.out.println(semester);
+        String[] splitedSemester = semester.split("\\.");
+        System.out.println(Arrays.toString(splitedSemester));
+        int integerYear = Integer.parseInt(splitedSemester[0]);
+        int integerSemester =Integer.parseInt(splitedSemester[1]);
+        if (integerSemester == 1){
+            decreasedSemester = String.valueOf(integerYear - 1) + ".2";
+        } else {
+            decreasedSemester = String.valueOf(integerYear) + "." + String.valueOf(integerSemester - 1);
+        }
+        return decreasedSemester;
+    }
+
     private void createPhotoForPlaque(UUID idPlaque) {
         // EurecaProfileDto profile = eurecaService.getEurecaProfile(tokenAS);
 
@@ -179,46 +226,71 @@ public class PlaqueServiceImpl implements PlaqueService {
         List<PlaqueModel> allPlaques = plaqueRepository.findAll();
 
         final Set<UUID> plaqueIdsFromStudents =
-                (studentName != null && studentName != "" && !studentName.isBlank())
+                (studentName != null && !studentName.isBlank())
                         ? studentRepository.findByNameContainingIgnoreCase(studentName)
                         .stream()
                         .map(student -> student.getPlaque().getId())
                         .collect(Collectors.toSet())
                         : Collections.emptySet();
 
+        final List<String> courseCodeList =
+                (courseCode != null && !courseCode.isBlank())
+                        ? Arrays.asList(courseCode.split(","))
+                        : Collections.emptyList();
+
+        final List<String> campusList =
+                (campus != null && !campus.isBlank())
+                        ? Arrays.asList(campus.split(","))
+                        : Collections.emptyList();
+
         return allPlaques.stream()
                 .filter(plaque -> {
-                    double semester = Double.parseDouble(plaque.getSemester());
-
-                    if (approved != null && !plaque.getApproved()) {
+                    double semester;
+                    try {
+                        semester = Double.parseDouble(plaque.getSemester());
+                    } catch (Exception e) {
                         return false;
                     }
 
-                    if (!plaqueIdsFromStudents.isEmpty() && plaqueIdsFromStudents.contains(plaque.getId())) {
-                        return true;
+                    if (!plaqueIdsFromStudents.isEmpty() && !plaqueIdsFromStudents.contains(plaque.getId())) {
+                        return false;
                     }
 
-                    if (startSemester != null && startSemester != "" && semester > Double.parseDouble(startSemester)) {
-                        return true;
-                    }
-                    if (endSemester != null && endSemester != "" && semester < Double.parseDouble(endSemester)) {
-                        return true;
-                    }
-                    if (courseCode != null && !courseCode.isEmpty() &&
-                            Arrays.asList(courseCode.split(",")).contains(plaque.getCourseCode())) {
-                        return true;
-                    }
-                    if (className != null && !className.isEmpty() &&
-                            plaque.getClassName().contains(className)) {
-                        return true;
+                    if (startSemester != null && !startSemester.isBlank()) {
+                        double start = Double.parseDouble(startSemester);
+                        if (semester < start) {
+                            return false;
+                        }
                     }
 
-                    if (campus != null && Arrays.asList(campus.split(",")).contains(String.valueOf(plaque.getCampus()))) {
-                        return true;
+                    if (endSemester != null && !endSemester.isBlank()) {
+                        double end = Double.parseDouble(endSemester);
+                        if (semester > end) {
+                            return false;
+                        }
                     }
 
-                    return false;
+                    if (!courseCodeList.isEmpty() && !courseCodeList.contains(plaque.getCourseCode())) {
+                        return false;
+                    }
+
+                    if (className != null && !className.isBlank()) {
+                        if (plaque.getClassName() == null || !plaque.getClassName().contains(className)) {
+                            return false;
+                        }
+                    }
+
+                    if (!campusList.isEmpty() && !campusList.contains(String.valueOf(plaque.getCampus()))) {
+                        return false;
+                    }
+
+                    return true;
                 })
+                .sorted(
+                        Comparator.comparing(PlaqueModel::getCampus)
+                                .thenComparing(PlaqueModel::getCourseCode)
+                                .thenComparing(p -> Double.parseDouble(p.getSemester()))
+                )
                 .map(PlaqueModel::toDto)
                 .toList();
     }

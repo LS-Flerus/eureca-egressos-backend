@@ -40,3 +40,5 @@ build/
 *.log.
 *.log
 /src/main/resources/private.pem
+
+.env
